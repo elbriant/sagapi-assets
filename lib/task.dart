@@ -1,9 +1,7 @@
-import 'dart:async';
-
 class Task {
   int? isolateId;
+  final String name;
+  String assetsUrl;
 
-  Task({this.isolateId});
-
-  FutureOr<void> job() async {}
+  Task({this.isolateId, required this.name, required this.assetsUrl});
 }

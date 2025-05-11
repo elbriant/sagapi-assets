@@ -11,16 +11,13 @@ class Downloader {
         .replaceAll(RegExp(r'\..*'), '.dat');
   }
 
-  static Future<void> downloadFile({
+  static Future<void> downloadSingleBundle({
     required String path,
     required String assetsUrl,
-    String? saveDirectory,
+    required String saveDirectory,
     int? isolateId,
     http.Client? isolateClient,
   }) async {
-    final savedir =
-        saveDirectory ?? Directory(filepath.join(Directory.current.path, 'bundles')).path;
-
     final formattedPath = encodePath(path);
     final response =
         (isolateClient != null)
@@ -35,17 +32,17 @@ class Downloader {
       for (final entry in archive) {
         if (entry.isFile) {
           final fileBytes = entry.readBytes()!;
-          File(filepath.join(savedir, entry.name))
+          File(filepath.join(saveDirectory, entry.name))
             ..createSync(recursive: true)
             ..writeAsBytesSync(fileBytes);
         }
       }
     } else {
-      File(filepath.join(savedir, path, formattedPath))
+      File(filepath.join(saveDirectory, path, formattedPath))
         ..createSync(recursive: true)
         ..writeAsBytesSync(response.bodyBytes);
     }
 
-    print('[download $isolateId] $path');
+    print('[I${isolateId ?? '!'}] download $path');
   }
 }

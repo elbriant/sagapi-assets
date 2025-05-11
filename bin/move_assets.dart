@@ -2,153 +2,65 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import 'package:sagapi_assets/globals.dart';
+
+class MoveData {
+  final List<String> from;
+  final List<String> to;
+  final bool moveAsFolder;
+
+  const MoveData({required this.from, required this.to, this.moveAsFolder = false});
+}
+
 void logMove(String path) {
   print('[move] moved $path');
 }
 
-Future<void> moveAssets() async {
-  final String fromDir = p.join(Directory.current.path, 'tmp');
-  final String toDir = p.join(Directory.current.path, 'assets');
+void _moveAndDelete(MoveData data) {
+  Directory pathFrom = Directory(p.joinAll([Directory.current.path, tmpDir, ...data.from]));
+  if (pathFrom.existsSync()) {
+    Directory pathTo = Directory(p.joinAll([Directory.current.path, assetsDir, ...data.to]))
+      ..createSync(recursive: true);
 
-  Directory pathFrom;
-  Directory pathTo;
-
-  // building skills
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'building', 'skills']));
-  pathTo = Directory(p.joinAll([toDir, 'building_skill']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
-    logMove(file.path);
-  }
-
-  // logo/factions img
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'camplogo']));
-  pathTo = Directory(p.joinAll([toDir, 'logo']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
-    logMove(file.path);
-  }
-
-  // char avatars
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'charavatars']));
-  pathTo = Directory(p.joinAll([toDir, 'charavatars']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
-    logMove(file.path);
-  }
-
-  // char portraits
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'charportraits']));
-  pathTo = Directory(p.joinAll([toDir, 'charportraits']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
-    logMove(file.path);
-  }
-
-  // dynamic assets
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'dynchars']));
-  pathTo = Directory(p.joinAll([toDir, 'dyn', 'dynchars']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    List<String> relFilePath = p
-      .join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', ''))
-      .split(p.separator)..removeLast();
-    Directory(p.joinAll(relFilePath)).createSync(recursive: true);
-    file.copySync(
-      p.join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', '')),
-    );
-    logMove(file.path);
-  }
-
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'dyncharstart']));
-  pathTo = Directory(p.joinAll([toDir, 'dyn', 'dyncharstart']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    List<String> relFilePath = p
-      .join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', ''))
-      .split(p.separator)..removeLast();
-    Directory(p.joinAll(relFilePath)).createSync(recursive: true);
-    file.copySync(
-      p.join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', '')),
-    );
-    logMove(file.path);
-  }
-
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'dynportraits']));
-  pathTo = Directory(p.joinAll([toDir, 'dyn', 'dynportraits']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    List<String> relFilePath = p
-      .join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', ''))
-      .split(p.separator)..removeLast();
-    Directory(p.joinAll(relFilePath)).createSync(recursive: true);
-    file.copySync(
-      p.join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', '')),
-    );
-    logMove(file.path);
-  }
-
-  // enemies avatars
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'enemies']));
-  pathTo = Directory(p.joinAll([toDir, 'enemies']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
-    logMove(file.path);
-  }
-
-  // items icons
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'items', 'icons']));
-  pathTo = Directory(p.joinAll([toDir, 'items']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
-    logMove(file.path);
-  }
-
-  // integrated strategies items
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'ui', 'rogueliketopic', 'itempic']));
-  pathTo = Directory(p.joinAll([toDir, 'items', 'is']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
-    logMove(file.path);
-  }
-
-  // skills icon
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'skills']));
-  pathTo = Directory(p.joinAll([toDir, 'skills']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
-    logMove(file.path);
-  }
-
-  // ui assets
-  pathFrom = Directory(p.joinAll([fromDir, 'dyn', 'arts', 'ui']));
-  pathTo = Directory(p.joinAll([toDir, 'ui']))..createSync(recursive: true);
-
-  for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-    if (file.path.startsWith(p.join(pathFrom.path, 'rogueliketopic'))) {
-      continue;
+    if (data.moveAsFolder) {
+      for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
+        List<String> relFilePath = p
+          .join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', ''))
+          .split(p.separator)..removeLast();
+        Directory(p.joinAll(relFilePath)).createSync(recursive: true);
+        file.copySync(
+          p.join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', '')),
+        );
+        file.deleteSync();
+        logMove(file.path);
+      }
+    } else {
+      for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
+        file.copySync(p.join(pathTo.path, file.path.split(p.separator).last));
+        file.deleteSync();
+        logMove(file.path);
+      }
     }
-
-    List<String> relFilePath = p
-      .join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', ''))
-      .split(p.separator)..removeLast();
-    Directory(p.joinAll(relFilePath)).createSync(recursive: true);
-    file.copySync(
-      p.join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', '')),
-    );
-    logMove(file.path);
   }
+}
 
-  // clean up
-  print('[move] deleting temp folder');
-  pathFrom = Directory(fromDir)..deleteSync(recursive: true);
-  print('[move] temp folder deleted');
+const List<MoveData> movedatas = [
+  MoveData(from: ['dyn', 'arts', 'building', 'skills'], to: ['building_skill']),
+  MoveData(from: ['dyn', 'arts', 'camplogo'], to: ['logo']),
+  MoveData(from: ['dyn', 'arts', 'charavatars'], to: ['charavatars']),
+  MoveData(from: ['dyn', 'arts', 'charportraits'], to: ['charportraits']),
+  MoveData(from: ['dyn', 'arts', 'dynchars'], to: ['dyn', 'dynchars'], moveAsFolder: true),
+  MoveData(from: ['dyn', 'arts', 'dyncharstart'], to: ['dyn', 'dyncharstart'], moveAsFolder: true),
+  MoveData(from: ['dyn', 'arts', 'dynportraits'], to: ['dyn', 'dynportraits'], moveAsFolder: true),
+  MoveData(from: ['dyn', 'arts', 'enemies'], to: ['enemies']),
+  MoveData(from: ['dyn', 'arts', 'items', 'icons'], to: ['items']),
+  MoveData(from: ['dyn', 'arts', 'ui', 'rogueliketopic', 'itempic'], to: ['items', 'is']),
+  MoveData(from: ['dyn', 'arts', 'skills'], to: ['skills']),
+  MoveData(from: ['dyn', 'arts', 'ui'], to: ['ui'], moveAsFolder: true),
+];
+
+Future<void> moveAssets() async {
+  for (var data in movedatas) {
+    _moveAndDelete(data);
+  }
 }
