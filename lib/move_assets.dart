@@ -59,7 +59,7 @@ const List<MoveData> movedatas = [
   MoveData(from: ['dyn', 'arts', 'ui'], to: ['ui'], moveAsFolder: true),
 ];
 
-Future<void> moveAssets() async {
+void moveAssets() {
   for (var data in movedatas) {
     _moveAndDelete(data);
   }
