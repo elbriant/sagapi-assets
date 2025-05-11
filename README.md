@@ -9,11 +9,6 @@
 - Items icon (including IS items)
 - some extra assets
 
-## TO-DO
+## Script based on [ArknightsAssets2 by ArknightsAssets](https://github.com/ArknightsAssets/ArknightsAssets2/tree/master)
 
-- Get or implement full dynamic art (background and some effectss)
-- Get character chibi assets (base and battle)
-
-### Script based on [ArknightsAssets2 by ArknightsAssets](https://github.com/ArknightsAssets/ArknightsAssets2/tree/master)
-
-#### Dumped using ArknightsStudio
+### Dumped using ArknightsStudio
