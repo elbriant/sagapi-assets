@@ -117,7 +117,7 @@ void main(List<String> arguments) async {
     Process.runSync('git', ['add', assetsDir]);
     // not sure what this does
     var result = Process.runSync('git', ['diff', '--cached', '--name-only', 'assets']);
-    if (systemEncoding.decode(result.stdout).trim().isEmpty) {
+    if ((result.stdout as String).trim().isEmpty) {
       continue;
     }
     Process.runSync('git', [
@@ -130,7 +130,7 @@ void main(List<String> arguments) async {
 
     // clean git commit
     print('cleaning up git');
-    var sha = systemEncoding.decode(Process.runSync('git', ['rev-parse', 'HEAD']).stdout).trim();
+    var sha = Process.runSync('git', ['rev-parse', 'HEAD']).stdout.trim();
     Process.runSync('git', ['checkout', '--detach', sha]);
     Process.runSync('git', ['fetch', '--depth=1', 'origin', '$branchName:$branchName']);
     Process.runSync('git', ['checkout', branchName]);
