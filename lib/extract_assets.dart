@@ -59,10 +59,11 @@ Future<void> extractAssetsAndDeleteBundle({
   await Directory(outputDir).create();
 
   final files =
-      await Directory(bundlesPath).list(recursive: true).toList()
-        ..whereType<File>().where((element) {
-          return element.path.endsWith('.ab') && !element.path.endsWith('hot_update_list.json');
-        }).toList();
+      (await Directory(bundlesPath).list(recursive: true).toList()).whereType<File>().where((
+        element,
+      ) {
+        return element.path.endsWith('.ab') && !element.path.endsWith('hot_update_list.json');
+      }).toList();
 
   List<ExtractTask> tasks = [];
 
