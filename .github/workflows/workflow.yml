@@ -37,12 +37,12 @@ jobs:
           dotnet-version: 6.0.x
       - name: Install dart sdk
         uses: dart-lang/setup-dart@v1
-        run: dart pub get
       - name: Prepare environment
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config http.postBuffer 2147483648
           if [[ $GITHUB_EVENT_NAME == 'workflow_dispatch' ]]; then echo "FORCE=--force" >> $GITHUB_ENV; fi
+          dart pub get
       - name: Update assets
         run: dart run sagapi_assets ${{ env.FORCE }}
