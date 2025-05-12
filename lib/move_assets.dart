@@ -24,10 +24,9 @@ void _moveAndDelete(MoveData data) {
 
     if (data.moveAsFolder) {
       for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-        List<String> relFolderPath = p
-          .join(pathTo.path, p.relative(file.path, from: pathFrom.path))
-          .split(p.separator)..removeLast();
-        Directory(p.joinAll(relFolderPath)).createSync(recursive: true);
+        File(
+          p.join(pathTo.path, p.relative(file.path, from: pathFrom.path)),
+        ).createSync(recursive: true);
         file.copySync(p.join(pathTo.path, p.relative(file.path, from: pathFrom.path)));
         file.deleteSync();
         logMove(file.path);
