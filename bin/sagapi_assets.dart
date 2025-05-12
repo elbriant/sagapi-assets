@@ -117,9 +117,10 @@ void main(List<String> arguments) async {
     Process.runSync('git', ['add', assetsDir]);
     // not sure what this does
     var result = Process.runSync('git', ['diff', '--cached', '--name-only', 'assets']);
-    if ((result.stdout as String).trim().isEmpty) {
-      continue;
-    }
+    print(result.stdout);
+    // if ((result.stdout as String).trim().isEmpty) {
+    //   continue;
+    // }
     Process.runSync('git', [
       'commit',
       '-m',

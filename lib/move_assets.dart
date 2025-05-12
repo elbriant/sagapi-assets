@@ -24,13 +24,11 @@ void _moveAndDelete(MoveData data) {
 
     if (data.moveAsFolder) {
       for (File file in pathFrom.listSync(recursive: true).whereType<File>()) {
-        List<String> relFilePath = p
-          .join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', ''))
+        List<String> relFolderPath = p
+          .join(pathTo.path, p.relative(file.path, from: pathFrom.path))
           .split(p.separator)..removeLast();
-        Directory(p.joinAll(relFilePath)).createSync(recursive: true);
-        file.copySync(
-          p.join(pathTo.path, file.path.replaceFirst('${pathFrom.path}${p.separator}', '')),
-        );
+        Directory(p.joinAll(relFolderPath)).createSync(recursive: true);
+        file.copySync(p.join(pathTo.path, p.relative(file.path, from: pathFrom.path)));
         file.deleteSync();
         logMove(file.path);
       }
