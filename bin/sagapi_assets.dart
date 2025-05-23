@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:math' show max;
+import 'dart:math' show max, min;
 
 import 'package:collection/collection.dart';
 import 'package:sagapi_assets/download_studio.dart';
@@ -91,7 +91,7 @@ void main(List<String> arguments) async {
 
     List<List<Task>> chunks = totalTasks.slices((totalTasks.length ~/ numOfIso) + 1).toList();
     List<Future<List<Task>>> isolatesTasks = List.generate(
-      numOfIso,
+      min(numOfIso, chunks.length),
       (i) => Isolate.run(() => processInDifferentIsolate(i, chunks[i])),
     );
     // this will supposedly exit when over or max space reached
