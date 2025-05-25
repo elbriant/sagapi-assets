@@ -2,6 +2,8 @@
 # Created by `dart pub`
 .dart_tool/
 
+# development
 assets/
 bundles/
+tmp/
 ArknightsStudioCLI/

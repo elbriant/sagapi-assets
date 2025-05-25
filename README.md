@@ -1,6 +1,7 @@
 # What contains this repo
 
 - Building skill icon
+- Character art
 - Character avatars
 - Character portraits
 - Character skills icons

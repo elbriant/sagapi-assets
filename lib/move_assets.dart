@@ -54,6 +54,7 @@ const List<MoveData> movedatas = [
   MoveData(from: ['dyn', 'arts', 'ui', 'rogueliketopic', 'itempic'], to: ['items', 'is']),
   MoveData(from: ['dyn', 'arts', 'skills'], to: ['skills']),
   MoveData(from: ['dyn', 'arts', 'ui'], to: ['ui'], moveAsFolder: true),
+  MoveData(from: ['Sprite'], to: ['chararts']),
 ];
 
 void moveAssets() {

@@ -8,7 +8,7 @@
             "name": "sagapi-assets",
             "type": "dart",
             "request": "launch",
-            "program": "bin/main.dart"
+            "program": "bin/sagapi_assets.dart"
         },
     ]
 }
