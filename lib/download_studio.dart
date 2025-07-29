@@ -13,12 +13,18 @@ Future<void> downloadAKstudio({bool forceUpdate = false}) async {
       Directory(akstudioDir).deleteSync(recursive: true);
     }
 
-    final response = await http.get(
-      Uri.parse(r'https://api.github.com/repos/aelurum/AssetStudio/releases'),
-    );
-    final data = (jsonDecode(response.body) as List).firstWhere(
-      (e) => (e['tag_name'] as String).startsWith('ak'),
-    );
+    dynamic data;
+    try {
+      final response = await http.get(
+        Uri.parse(r'https://api.github.com/repos/aelurum/AssetStudio/releases'),
+      );
+      data = (jsonDecode(response.body) as List).firstWhere(
+        (e) => (e['tag_name'] as String).startsWith('ak'),
+      );
+    } on Exception catch (e) {
+      print('Network error downloading ak-studio: $e');
+      rethrow;
+    }
 
     final url =
         (data['assets'] as List).firstWhere(
