@@ -14,13 +14,26 @@ import 'package:sagapi_assets/extract_assets.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
+ProcessResult runGit(List<String> args, {bool check = false}) {
+  final result = Process.runSync('git', args);
+  if (check && result.exitCode != 0) {
+    throw ProcessException(
+      'git',
+      args,
+      '${result.stdout}${result.stderr}'.trim(),
+      result.exitCode,
+    );
+  }
+  return result;
+}
+
 void main(List<String> arguments) async {
   final savedir = p.join(Directory.current.path, bundlesDir);
   final bool forceUpdate = arguments.contains('--force');
 
   // checkout assets branch
-  Process.runSync('git', ["fetch", "--depth=1", "origin", "$branchName:$branchName"]);
-  Process.runSync('git', ["checkout", branchName]);
+  runGit(["fetch", "--depth=1", "origin", "$branchName:$branchName"]);
+  runGit(["checkout", branchName], check: true);
 
   final config = jsonDecode(
     jsonDecode((await http.get(Uri.parse(cnNetworkConfigUrl))).body)['content'],
@@ -126,27 +139,27 @@ void main(List<String> arguments) async {
       '-m',
       'update $resVersion $processedTasks/$totalTasksLength',
     ]);
-    Process.runSync('git', ['log', '--oneline']);
-    Process.runSync('git', ['push', 'origin', branchName]);
+    runGit(['log', '--oneline']);
+    runGit(['push', 'origin', branchName], check: true);
 
     // clean git commit
     print('cleaning up git');
-    var sha = Process.runSync('git', ['rev-parse', 'HEAD']).stdout.trim();
-    Process.runSync('git', ['checkout', '--detach', sha]);
-    Process.runSync('git', ['fetch', '--depth=1', 'origin', '$branchName:$branchName']);
-    Process.runSync('git', ['checkout', branchName]);
-    Process.runSync('git', ['reflog', 'expire', '--expire=now', '--all']);
-    Process.runSync('git', ['gc', '--prune=now']);
+    var sha = runGit(['rev-parse', 'HEAD'], check: true).stdout.trim();
+    runGit(['checkout', '--detach', sha], check: true);
+    runGit(['fetch', '--depth=1', 'origin', '$branchName:$branchName']);
+    runGit(['checkout', branchName], check: true);
+    runGit(['reflog', 'expire', '--expire=now', '--all']);
+    runGit(['gc', '--prune=now']);
   }
 
   await bundleFolder.create();
   await File(p.join(bundleFolder.path, 'hot_update_list.json')).writeAsBytes(newDataList.bodyBytes);
 
   // push final commit
-  Process.runSync('git', ['add', bundlesDir]);
-  Process.runSync('git', ['commit', '-m', 'update $resVersion final hot_update_list']);
-  Process.runSync('git', ['push', 'origin', branchName]);
-  Process.runSync('git', ['checkout', 'master']);
+  runGit(['add', bundlesDir]);
+  runGit(['commit', '-m', 'update $resVersion final hot_update_list']);
+  runGit(['push', 'origin', branchName], check: true);
+  runGit(['checkout', 'master'], check: true);
   print("updated ${newHotUpdateList['versionId']}");
 }
 

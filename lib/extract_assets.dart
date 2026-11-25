@@ -21,30 +21,27 @@ class ExtractTask {
   });
 
   Future<void> job() async {
-    if (filtersByName.isNotEmpty) {
-      await Process.run("dotnet", [
-        (p.join(Directory.current.path, "ArknightsStudioCLI", "ArknightsStudioCLI.dll")),
-        path,
-        "-t",
-        (types),
-        "-o",
-        (outputDir),
-        "-g",
-        groupMode.isNotEmpty ? (groupMode) : 'container',
-        "--filter-by-name",
-        (filtersByName),
-      ]);
-    } else {
-      await Process.run("dotnet", [
-        (p.join(Directory.current.path, "ArknightsStudioCLI", "ArknightsStudioCLI.dll")),
-        path,
-        "-t",
-        (types),
-        "-o",
-        (outputDir),
-        "-g",
-        groupMode.isNotEmpty ? (groupMode) : 'container',
-      ]);
+    final args = <String>[
+      p.join(Directory.current.path, "ArknightsStudioCLI", "ArknightsStudioCLI.dll"),
+      path,
+      "-t",
+      types,
+      "-o",
+      outputDir,
+      "-g",
+      groupMode.isNotEmpty ? groupMode : 'container',
+      if (filtersByName.isNotEmpty) ...["--filter-by-name", filtersByName],
+    ];
+
+    final result = await Process.run("dotnet", args);
+
+    if (result.exitCode != 0) {
+      throw ProcessException(
+        "dotnet",
+        args,
+        "${result.stdout}\n${result.stderr}".trim(),
+        result.exitCode,
+      );
     }
   }
 }
@@ -75,16 +72,18 @@ Future<void> extractAssetsAndDeleteBundle({
     String? groupMode;
 
     if (filepath.contains('charportraits')) {
+      // legacy portrait hub, no longer contains portrait textures
       types.addAll(["akPortrait", "textAsset"]);
+    } else if (filepath.contains('char_portrait')) {
+      // portraits live in spritepack/char_portrait_*.ab since ~2025-10-21
+      types.add('sprite');
+    } else if (filepath.contains('chararts') || filepath.contains('skinpack')) {
+      types.add('sprite');
+      groupMode = 'type';
     } else {
-      if (filepath.contains('chararts') || filepath.contains('skinpack')) {
-        types.add('sprite');
-        groupMode = 'type';
-      } else {
-        types.addAll(["tex2d", "textAsset"]);
-        if (filepath.contains('dynchars')) {
-          filterByName.add('dyn_illust_');
-        }
+      types.addAll(["tex2d", "textAsset"]);
+      if (filepath.contains('dynchars')) {
+        filterByName.add('dyn_illust_');
       }
     }
 
@@ -102,9 +101,15 @@ Future<void> extractAssetsAndDeleteBundle({
   var queue = QueueList.from(tasks);
   while (queue.isNotEmpty) {
     var task = queue.removeFirst();
-    await task.job();
-    await File(task.path).delete();
+    try {
+      await task.job();
+      await File(task.path).delete();
 
-    print("[AKStudio I${isoId ?? '!'}] ${task.path}");
+      print("[AKStudio I${isoId ?? '!'}] ${task.path}");
+    } on ProcessException catch (e) {
+      // Keep the bundle and make the failure loud instead of silently dropping it
+      stderr.writeln("[AKStudio I${isoId ?? '!'}] FAILED ${task.path}");
+      stderr.writeln("[AKStudio I${isoId ?? '!'}] exit=${e.errorCode} ${e.message}");
+    }
   }
 }

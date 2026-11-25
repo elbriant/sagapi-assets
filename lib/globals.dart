@@ -2,7 +2,7 @@ const String cnNetworkConfigUrl =
     r"https://ak-conf.hypergryph.com/config/prod/official/network_config";
 
 const List<List<String>> spriteBundlePaths = [
-  ['arts', 'charportraits'],
+  ['spritepack', 'char_portrait'],
   ['arts', 'dynchars'],
   ['chararts'],
   ['skinpack'],
